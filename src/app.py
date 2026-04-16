@@ -9,6 +9,8 @@ import numpy as np
 import base64
 import io
 import cv2
+import os
+import gdown
 
 # ─────────────────────────────────────────
 #  APP SETUP
@@ -32,6 +34,17 @@ app.add_middleware(
 # ─────────────────────────────────────────
 DEVICE     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MODEL_PATH = "models/best_model.pth"
+
+# Download model if not present
+if not os.path.exists(MODEL_PATH):
+    os.makedirs("models", exist_ok=True)
+    print("Downloading model from Google Drive...")
+    gdown.download(
+        "https://drive.google.com/uc?id=1WHgMaLV_HW0iRUl96ll50v2rZI0rwkm7",
+        MODEL_PATH,
+        quiet=False
+    )
+    print("Model downloaded ✅")
 
 print("Loading model...")
 model = models.efficientnet_b0(weights=None)
@@ -104,20 +117,16 @@ gradcam = GradCAM(model)
 #  HELPER — overlay heatmap on image
 # ─────────────────────────────────────────
 def apply_heatmap(original_pil, cam):
-    # Resize cam to image size
     img_array = np.array(original_pil.resize((224, 224)))
     cam_resized = cv2.resize(cam, (224, 224))
 
-    # Apply colormap
     heatmap = cv2.applyColorMap(
         np.uint8(255 * cam_resized), cv2.COLORMAP_JET
     )
     heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
 
-    # Overlay
     overlay = (0.6 * img_array + 0.4 * heatmap).astype(np.uint8)
 
-    # Convert to base64
     pil_overlay = Image.fromarray(overlay)
     buffer = io.BytesIO()
     pil_overlay.save(buffer, format="PNG")
@@ -138,14 +147,11 @@ def home():
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
-        # Read image
         contents = await file.read()
         image    = Image.open(io.BytesIO(contents)).convert("RGB")
 
-        # Transform for model
         input_tensor = transform(image).unsqueeze(0).to(DEVICE)
 
-        # Predict
         with torch.no_grad():
             outputs     = model(input_tensor)
             probs       = torch.softmax(outputs, dim=1)[0]
@@ -154,7 +160,6 @@ async def predict(file: UploadFile = File(...)):
 
         label = CLASSES[pred_idx]
 
-        # Generate Grad-CAM heatmap
         input_tensor.requires_grad = True
         cam      = gradcam.generate(input_tensor, pred_idx)
         heatmap  = apply_heatmap(image, cam)
