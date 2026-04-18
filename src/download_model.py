@@ -9,13 +9,17 @@ def download_model():
 
     if not os.path.exists(MODEL_PATH):
         print("Downloading model from Google Drive...")
-        gdown.download(
-            id="1WHgMaLV_HW0iRUl96ll50v2rZI0rwkm7",
-            output=MODEL_PATH,
-            quiet=False,
-            fuzzy=True
-        )
-        print("Model downloaded ✅")
+        try:
+            gdown.download(
+                id="1WHgMaLV_HW0iRUl96ll50v2rZI0rwkm7",
+                output=MODEL_PATH,
+                quiet=False,
+                fuzzy=True
+            )
+            print("Model downloaded ✅")
+        except Exception as e:
+            print(f"Download failed: {e}")
+            raise
     else:
         print("Model already exists ✅")
 
