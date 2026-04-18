@@ -10,18 +10,37 @@ import base64
 import io
 import cv2
 import os
-import gdown
+import urllib.request
+
+# ─────────────────────────────────────────
+#  MODEL DOWNLOAD
+# ─────────────────────────────────────────
+DEVICE     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+MODEL_PATH = "models/best_model.pth"
+FILE_ID    = "1WHgMaLV_HW0iRUl96ll50v2rZI0rwkm7"
+
+if not os.path.exists(MODEL_PATH):
+    os.makedirs("models", exist_ok=True)
+    print("Downloading model from Google Drive...")
+    try:
+        url = f"https://drive.usercontent.google.com/download?id={FILE_ID}&export=download&confirm=t"
+        urllib.request.urlretrieve(url, MODEL_PATH)
+        print("Model downloaded ✅")
+    except Exception as e:
+        print(f"Download failed: {e}")
+        raise
+else:
+    print("Model already exists ✅")
 
 # ─────────────────────────────────────────
 #  APP SETUP
 # ─────────────────────────────────────────
 app = FastAPI(
-    title="Deepfake Detector API",
+    title="VeriFace AI API",
     description="Detects if an image is real or AI-generated",
     version="1.0.0"
 )
 
-# Allow frontend to talk to backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -32,26 +51,14 @@ app.add_middleware(
 # ─────────────────────────────────────────
 #  LOAD MODEL
 # ─────────────────────────────────────────
-DEVICE     = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-MODEL_PATH = "models/best_model.pth"
-
-# Download model if not present
-if not os.path.exists(MODEL_PATH):
-    os.makedirs("models", exist_ok=True)
-    print("Downloading model from Google Drive...")
-    gdown.download(
-        "https://drive.google.com/uc?id=1WHgMaLV_HW0iRUl96ll50v2rZI0rwkm7",
-        MODEL_PATH,
-        quiet=False
-    )
-    print("Model downloaded ✅")
-
 print("Loading model...")
 model = models.efficientnet_b0(weights=None)
 model.classifier[1] = nn.Linear(
     model.classifier[1].in_features, 2
 )
-model.load_state_dict(torch.load(MODEL_PATH, map_location=DEVICE, weights_only=False))
+model.load_state_dict(
+    torch.load(MODEL_PATH, map_location=DEVICE, weights_only=False)
+)
 model.eval()
 model.to(DEVICE)
 print("Model loaded ✅")
@@ -66,20 +73,17 @@ transform = transforms.Compose([
                          [0.229, 0.224, 0.225])
 ])
 
-# Class labels
 CLASSES = ["fake", "real"]
 
 # ─────────────────────────────────────────
-#  GRAD-CAM HELPER
+#  GRAD-CAM
 # ─────────────────────────────────────────
 class GradCAM:
     def __init__(self, model):
-        self.model    = model
-        self.gradient = None
+        self.model      = model
+        self.gradient   = None
         self.activation = None
-
-        # Hook into last conv layer of EfficientNet
-        target_layer = model.features[-1]
+        target_layer    = model.features[-1]
         target_layer.register_forward_hook(self._save_activation)
         target_layer.register_full_backward_hook(self._save_gradient)
 
@@ -90,86 +94,69 @@ class GradCAM:
         self.gradient = grad_output[0].detach()
 
     def generate(self, input_tensor, class_idx):
-        # Forward pass
         output = self.model(input_tensor)
         self.model.zero_grad()
-
-        # Backward pass for target class
-        target = output[0][class_idx]
-        target.backward()
-
-        # Generate heatmap
-        weights  = self.gradient.mean(dim=(2, 3), keepdim=True)
-        cam      = (weights * self.activation).sum(dim=1, keepdim=True)
-        cam      = torch.relu(cam)
-        cam      = cam.squeeze().cpu().numpy()
-
-        # Normalize
-        cam = cam - cam.min()
+        output[0][class_idx].backward()
+        weights = self.gradient.mean(dim=(2, 3), keepdim=True)
+        cam     = (weights * self.activation).sum(dim=1, keepdim=True)
+        cam     = torch.relu(cam).squeeze().cpu().numpy()
+        cam     = cam - cam.min()
         if cam.max() != 0:
             cam = cam / cam.max()
-
         return cam
 
 gradcam = GradCAM(model)
 
 # ─────────────────────────────────────────
-#  HELPER — overlay heatmap on image
+#  HEATMAP HELPER
 # ─────────────────────────────────────────
 def apply_heatmap(original_pil, cam):
-    img_array = np.array(original_pil.resize((224, 224)))
+    img_array   = np.array(original_pil.resize((224, 224)))
     cam_resized = cv2.resize(cam, (224, 224))
-
-    heatmap = cv2.applyColorMap(
-        np.uint8(255 * cam_resized), cv2.COLORMAP_JET
-    )
-    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
-
-    overlay = (0.6 * img_array + 0.4 * heatmap).astype(np.uint8)
-
-    pil_overlay = Image.fromarray(overlay)
-    buffer = io.BytesIO()
-    pil_overlay.save(buffer, format="PNG")
-    b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
-    return b64
+    heatmap     = cv2.applyColorMap(np.uint8(255 * cam_resized), cv2.COLORMAP_JET)
+    heatmap     = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+    overlay     = (0.6 * img_array + 0.4 * heatmap).astype(np.uint8)
+    buffer      = io.BytesIO()
+    Image.fromarray(overlay).save(buffer, format="PNG")
+    return base64.b64encode(buffer.getvalue()).decode("utf-8")
 
 # ─────────────────────────────────────────
 #  ROUTES
 # ─────────────────────────────────────────
-
 @app.get("/")
 def home():
     return {
-        "message" : "Deepfake Detector API is running! ✅",
+        "message" : "VeriFace AI API is running! ✅",
         "docs"    : "Visit /docs to test the API"
     }
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     try:
-        contents = await file.read()
-        image    = Image.open(io.BytesIO(contents)).convert("RGB")
-
+        contents     = await file.read()
+        image        = Image.open(io.BytesIO(contents)).convert("RGB")
         input_tensor = transform(image).unsqueeze(0).to(DEVICE)
 
         with torch.no_grad():
-            outputs     = model(input_tensor)
-            probs       = torch.softmax(outputs, dim=1)[0]
-            pred_idx    = probs.argmax().item()
-            confidence  = probs[pred_idx].item() * 100
+            outputs    = model(input_tensor)
+            probs      = torch.softmax(outputs, dim=1)[0]
+            pred_idx   = probs.argmax().item()
+            confidence = probs[pred_idx].item() * 100
 
         label = CLASSES[pred_idx]
 
+        input_tensor         = transform(image).unsqueeze(0).to(DEVICE)
         input_tensor.requires_grad = True
-        cam      = gradcam.generate(input_tensor, pred_idx)
-        heatmap  = apply_heatmap(image, cam)
+        cam     = gradcam.generate(input_tensor, pred_idx)
+        heatmap = apply_heatmap(image, cam)
 
         return JSONResponse({
-            "prediction"  : label,
-            "confidence"  : round(confidence, 2),
-            "is_fake"     : label == "fake",
-            "heatmap"     : heatmap,
-            "message"     : f"This image is {label.upper()} with {confidence:.1f}% confidence"
+            "prediction"     : label,
+            "confidence"     : round(confidence, 2),
+            "model_accuracy" : 97,
+            "is_fake"        : label == "fake",
+            "heatmap"        : heatmap,
+            "message"        : f"This image is {label.upper()} with {confidence:.1f}% confidence"
         })
 
     except Exception as e:
