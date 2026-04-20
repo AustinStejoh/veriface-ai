@@ -11,6 +11,7 @@ export default function App() {
   const [result, setResult]   = useState(null);
   const [loading, setLoading] = useState(false);
   const [heatmap, setHeatmap] = useState(null);
+  const [showExplanation, setShowExplanation] = useState(false);
 
   const onDrop = useCallback((files) => {
     const file = files[0];
@@ -44,6 +45,7 @@ export default function App() {
   const reset = () => {
     setImage(null); setPreview(null);
     setResult(null); setHeatmap(null);
+    setShowExplanation(false);
   };
 
   return (
@@ -104,26 +106,35 @@ export default function App() {
           </div>
         )}
 
-        {/* Image previews */}
+        {/* Image preview with overlay */}
         {preview && (
-          <div className="preview-grid">
-            <div className="img-card">
-              <div className="img-card-label"><span/>Original Image</div>
-              <img src={preview} alt="original" />
-            </div>
-            <div className="img-card">
-              <div className="img-card-label"><span/>Grad-CAM Heatmap</div>
-              {heatmap
-                ? <img src={heatmap} alt="heatmap" />
-                : <div className="img-placeholder">
-                    <svg width="32" height="32" fill="none" stroke="currentColor"
-                      strokeWidth="1.5" viewBox="0 0 24 24">
-                      <circle cx="12" cy="12" r="10"/>
-                      <path d="M12 8v4l3 3"/>
-                    </svg>
-                    Run analysis to see heatmap
-                  </div>
-              }
+          <div className="image-preview-container">
+            <div className="image-card">
+              <div className="image-label">
+                <span>Image Analysis</span>
+                {result && heatmap && (
+                  <button
+                    className={`explanation-toggle ${showExplanation ? 'active' : ''}`}
+                    onClick={() => setShowExplanation(!showExplanation)}
+                  >
+                    {showExplanation ? 'Hide' : 'Show'} AI Explanation
+                  </button>
+                )}
+              </div>
+              <div className="image-wrapper">
+                <img
+                  src={preview}
+                  alt="original"
+                  className="original-image"
+                />
+                {showExplanation && heatmap && (
+                  <img
+                    src={heatmap}
+                    alt="heatmap overlay"
+                    className="heatmap-overlay"
+                  />
+                )}
+              </div>
             </div>
           </div>
         )}
