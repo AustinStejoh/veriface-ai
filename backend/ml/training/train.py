@@ -8,8 +8,8 @@ import os, random, time
 # ─────────────────────────────────────────
 #  CONFIG
 # ─────────────────────────────────────────
-DATA_DIR   = "data/real_vs_fake/real-vs-fake"
-SAVE_PATH  = "models/best_model.pth"
+DATA_DIR   = "../../data/real_vs_fake/real-vs-fake"
+SAVE_PATH  = "../models/best_model.pth"
 BATCH_SIZE = 16
 EPOCHS     = 5
 LR         = 0.0003

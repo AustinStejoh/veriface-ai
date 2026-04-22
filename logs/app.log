@@ -1,0 +1,56 @@
+2026-04-20 22:13:51 - app - INFO - [app.py:71] - Model loaded on device: cpu
+2026-04-20 22:13:51 - app - INFO - [app.py:597] - ================================================================================
+2026-04-20 22:13:51 - app - INFO - [app.py:598] - Deepfake Detector API Starting
+2026-04-20 22:13:51 - app - INFO - [app.py:599] - Device: cpu
+2026-04-20 22:13:51 - app - INFO - [app.py:600] - Cache Status: {'connected': True, 'used_memory_human': '982.03K', 'connected_clients': 1, 'total_commands_processed': 18, 'uptime_in_days': 0}
+2026-04-20 22:13:51 - app - INFO - [app.py:601] - Async Workers: 4
+2026-04-20 22:13:51 - app - INFO - [app.py:602] - ================================================================================
+2026-04-20 22:13:56 - app - INFO - [app.py:71] - Model loaded on device: cpu
+2026-04-20 22:13:56 - app - INFO - [app.py:597] - ================================================================================
+2026-04-20 22:13:56 - app - INFO - [app.py:598] - Deepfake Detector API Starting
+2026-04-20 22:13:56 - app - INFO - [app.py:599] - Device: cpu
+2026-04-20 22:13:56 - app - INFO - [app.py:600] - Cache Status: {'connected': True, 'used_memory_human': '1008.52K', 'connected_clients': 2, 'total_commands_processed': 24, 'uptime_in_days': 0}
+2026-04-20 22:13:56 - app - INFO - [app.py:601] - Async Workers: 4
+2026-04-20 22:13:56 - app - INFO - [app.py:602] - ================================================================================
+2026-04-20 22:14:17 - app - INFO - [app.py:71] - Model loaded on device: cpu
+2026-04-20 22:14:17 - app - INFO - [app.py:597] - ================================================================================
+2026-04-20 22:14:17 - app - INFO - [app.py:598] - Deepfake Detector API Starting
+2026-04-20 22:14:17 - app - INFO - [app.py:599] - Device: cpu
+2026-04-20 22:14:17 - app - INFO - [app.py:600] - Cache Status: {'connected': True, 'used_memory_human': '1008.40K', 'connected_clients': 2, 'total_commands_processed': 30, 'uptime_in_days': 0}
+2026-04-20 22:14:17 - app - INFO - [app.py:601] - Async Workers: 4
+2026-04-20 22:14:17 - app - INFO - [app.py:602] - ================================================================================
+2026-04-20 22:14:53 - app - INFO - [app.py:71] - Model loaded on device: cpu
+2026-04-20 22:14:53 - app - INFO - [app.py:597] - ================================================================================
+2026-04-20 22:14:53 - app - INFO - [app.py:598] - Deepfake Detector API Starting
+2026-04-20 22:14:53 - app - INFO - [app.py:599] - Device: cpu
+2026-04-20 22:14:53 - app - INFO - [app.py:600] - Cache Status: {'connected': True, 'used_memory_human': '1008.40K', 'connected_clients': 2, 'total_commands_processed': 36, 'uptime_in_days': 0}
+2026-04-20 22:14:53 - app - INFO - [app.py:601] - Async Workers: 4
+2026-04-20 22:14:53 - app - INFO - [app.py:602] - ================================================================================
+2026-04-20 22:15:00 - app - INFO - [app.py:71] - Model loaded on device: cpu
+2026-04-20 22:15:00 - app - INFO - [app.py:597] - ================================================================================
+2026-04-20 22:15:00 - app - INFO - [app.py:598] - Deepfake Detector API Starting
+2026-04-20 22:15:00 - app - INFO - [app.py:599] - Device: cpu
+2026-04-20 22:15:00 - app - INFO - [app.py:600] - Cache Status: {'connected': True, 'used_memory_human': '1008.40K', 'connected_clients': 2, 'total_commands_processed': 42, 'uptime_in_days': 0}
+2026-04-20 22:15:00 - app - INFO - [app.py:601] - Async Workers: 4
+2026-04-20 22:15:00 - app - INFO - [app.py:602] - ================================================================================
+2026-04-20 22:15:08 - app - INFO - [app.py:71] - Model loaded on device: cpu
+2026-04-20 22:15:08 - app - INFO - [app.py:597] - ================================================================================
+2026-04-20 22:15:08 - app - INFO - [app.py:598] - Deepfake Detector API Starting
+2026-04-20 22:15:08 - app - INFO - [app.py:599] - Device: cpu
+2026-04-20 22:15:08 - app - INFO - [app.py:600] - Cache Status: {'connected': True, 'used_memory_human': '1008.40K', 'connected_clients': 2, 'total_commands_processed': 48, 'uptime_in_days': 0}
+2026-04-20 22:15:08 - app - INFO - [app.py:601] - Async Workers: 4
+2026-04-20 22:15:08 - app - INFO - [app.py:602] - ================================================================================
+2026-04-20 22:16:00 - app - INFO - [app.py:71] - Model loaded on device: cpu
+2026-04-20 22:16:00 - app - INFO - [app.py:597] - ================================================================================
+2026-04-20 22:16:00 - app - INFO - [app.py:598] - Deepfake Detector API Starting
+2026-04-20 22:16:00 - app - INFO - [app.py:599] - Device: cpu
+2026-04-20 22:16:00 - app - INFO - [app.py:600] - Cache Status: {'connected': True, 'used_memory_human': '1006.02K', 'connected_clients': 1, 'total_commands_processed': 54, 'uptime_in_days': 0}
+2026-04-20 22:16:00 - app - INFO - [app.py:601] - Async Workers: 4
+2026-04-20 22:16:00 - app - INFO - [app.py:602] - ================================================================================
+2026-04-20 22:16:04 - app - INFO - [app.py:71] - Model loaded on device: cpu
+2026-04-20 22:16:04 - app - INFO - [app.py:597] - ================================================================================
+2026-04-20 22:16:04 - app - INFO - [app.py:598] - Deepfake Detector API Starting
+2026-04-20 22:16:04 - app - INFO - [app.py:599] - Device: cpu
+2026-04-20 22:16:04 - app - INFO - [app.py:600] - Cache Status: {'connected': True, 'used_memory_human': '1008.40K', 'connected_clients': 2, 'total_commands_processed': 60, 'uptime_in_days': 0}
+2026-04-20 22:16:04 - app - INFO - [app.py:601] - Async Workers: 4
+2026-04-20 22:16:04 - app - INFO - [app.py:602] - ================================================================================
